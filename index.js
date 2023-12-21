@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json()); 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o9ylutr.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -30,6 +30,45 @@ async function run() {
       const result = await tasks.find().toArray();
       res.send(result)
       })
+    
+    
+    app.post('/addTask', async (req, res) => {
+          const newTask = req.body;
+          const result = await tasks.insertOne(newTask);
+          res.send(result);
+    })
+
+     app.delete('/task/delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await tasks.deleteOne(query); 
+      res.send(result);
+
+    })
+    
+    // app.put("/task/update/:id" , async (req, res) => {
+    //   const id = req.params.id;
+    //   const updatedTask = req.body;
+    //   const filter = { _id: new ObjectId(id) };
+    //   const options = { upsert: true };
+
+    //   const task = {
+    //     $set: {
+    //       title: updatedTask.title,
+    //       description: updatedTask.description,
+    //       deadline: updatedTask.deadline,
+    //       priority: updatedTask.priority
+    //     }
+    //   }
+      
+    //   const result = await tasks.updateOne(filter , task , options); 
+    //   res.send(result);
+
+    // })
+    
+    
+    
+    
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
    
